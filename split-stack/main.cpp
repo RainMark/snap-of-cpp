@@ -2,6 +2,8 @@
 #include <exception>
 #include <ucontext.h>
 
+#include "foo.h"
+
 #define STACK_SIZE 1024
 
 ///////////////////////////
@@ -116,6 +118,7 @@ void make_stack(stack_context& sc, std::size_t stack_size) {
 
 void bar() {
   char b[STACK_SIZE * 1024 * 100] = {0};
+  std::cout << foo(0) << std::endl;
 }
 
 void foo() {
