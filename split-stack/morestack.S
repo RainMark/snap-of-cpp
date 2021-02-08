@@ -479,7 +479,7 @@ __morestack:
         # and the argument size is passed in r11.
 
 	addq	$BACKOFF,%r10		# Ask for backoff bytes.
-	addq	$1048576,%r10		# Ask extra 1024 * 1024 bytes.
+	addq	$314572800,%r10		# Ask extra 1024 * 1024 * 300 bytes.
 	pushq	%r10			# Save new frame size.
 
 	# In 64-bit mode the registers %rdi, %rsi, %rdx, %rcx, %r8,
