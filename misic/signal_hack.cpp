@@ -6,11 +6,30 @@
 #include <errno.h>
 #include <unistd.h>
 
-ucontext_t main_ctx;
 
+/**
+   $ gcc signal_hack.cpp
+   $ ./a.out
+   $ kill -s SIGUSR1 <pid>
+*/
+
+ucontext_t main_ctx;
+long long int rip;
+long long int rsp;
+
+/**
+   schedule() called after user signal handler exit, on kernel back to userspace
+   signal related resource already recycled.
+*/
 void schedule() {
-    void* esp;
-    printf("enter schedule point, esp = %p\n", &esp);
+    /**
+       the kernel generated ucontext can not used for glibc ucontext.
+       getcontext at first and update ip/sp to act like call getcontext on signal interupt point.
+    */
+    getcontext(&main_ctx);
+    main_ctx.uc_mcontext.gregs[REG_RIP] = rip;
+    main_ctx.uc_mcontext.gregs[REG_RSP] = rsp;
+    printf("enter schedule point\n");
     setcontext(&main_ctx);
 }
 
@@ -22,7 +41,8 @@ void print_ucontext(ucontext_t* ctx) {
 
 void hack(ucontext_t* ctx) {
     printf("hack to %p\n", schedule);
-    memcpy(&main_ctx, ctx, sizeof(main_ctx));
+    rip = ctx->uc_mcontext.gregs[REG_RIP];
+    rsp = ctx->uc_mcontext.gregs[REG_RSP];
     ctx->uc_mcontext.gregs[REG_RIP] = (long long int) schedule;
 }
 
@@ -42,7 +62,11 @@ int main() {
     sigaction(SIGUSR1, &action, NULL);
 
     printf("enter loop\n");
-    while (1);
+    while (1) {
+        printf("enter sleep 1\n");
+        sleep(1);
+        printf("exit sleep 1\n");
+    }
     printf("exit loop\n");
 
     return 0;
