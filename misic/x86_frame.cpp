@@ -2,6 +2,13 @@
 
 long long int next = 0;
 
+// asm("ojbk:\n"
+//     "   movl $1, %eax\n"
+//     "   retq"
+//     );
+
+// extern int ojbk() asm ("ojbk");
+
 void bar() {
     asm("pushq (%rbp)");
     asm("movq %rsp, %rbp");
@@ -41,6 +48,7 @@ int main() {
     printf("main()\n");
     printf("rbp     = %lld\n", rbp);
     foo();
+    // printf("ojbk(): %d\n", ojbk());
     printf("exit()\n");
     return 0;
 }
