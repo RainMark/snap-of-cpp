@@ -8,6 +8,7 @@ long long int next = 0;
 //     );
 
 // extern int ojbk() asm ("ojbk");
+extern int xxx() asm("xxx");
 
 void bar() {
     asm("pushq (%rbp)");
@@ -39,6 +40,10 @@ void foo() {
         :);
 }
 
+int f() {
+    asm("movl $10086, %eax");
+}
+
 int main() {
     long long int rbp;
     asm("movq %%rbp, %0"
@@ -49,6 +54,8 @@ int main() {
     printf("rbp     = %lld\n", rbp);
     foo();
     // printf("ojbk(): %d\n", ojbk());
+    printf("f() %d\n", f());
+    printf("xxx() %d\n", xxx());
     printf("exit()\n");
     return 0;
 }
